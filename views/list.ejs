@@ -11,10 +11,16 @@
 
     <form action="/delete" method="post">
       <div class="item">
-        <input type="checkbox" name="checkbox" value="<%=item._id%>" onChange="this.form.submit()">
-        <p><%=item.name%></p>
+        <% if (item.completed === true){ %> 
+          <input type="checkbox" name="checkbox" checked="true" onChange="this.form.submit()">
+          <p style="text-decoration: line-through;"><%=item.name%></p> 
+        <% } else{ %>
+          <input type="checkbox" name="checkbox" onChange="this.form.submit()">
+          <p><%=item.name%></p> 
+        <% } %>
       </div>
       <input type="hidden" name="listName" value="<%= listTitle %>"></input>
+      <input type="text" name="itemId" value="<%=item._id%>" hidden="true" />
     </form>
   <%  }) %>
 
