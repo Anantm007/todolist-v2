@@ -113,7 +113,17 @@ router.post("/", function (req, res) {
   }
 });
 
-router.post("/delete", async (req, res) => {
+router.get("/api/delete/:id", async (req, res) => {
+  try {
+    await Item.findByIdAndRemove(req.params.id);
+    res.redirect("/");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+});
+
+router.post("/mark", async (req, res) => {
   try {
     const checkedItemId = req.body.itemId;
     const listName = req.body.listName;

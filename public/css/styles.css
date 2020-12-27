@@ -94,3 +94,14 @@ footer {
   color: rgba(0, 0, 0, 0.5);
   text-align: center;
 }
+
+.myFa {
+  font-size: 1.7rem;
+  color: purple;
+  margin-right: 0.5em;
+}
+
+.myFa:hover {
+  cursor: pointer;
+  color: #9f5f80;
+}

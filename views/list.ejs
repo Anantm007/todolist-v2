@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 <%- include("header") -%>
 
   <div class="box" id="heading">
@@ -9,14 +12,16 @@
 
   <%  newListItems.forEach(function(item){ %>
 
-    <form action="/delete" method="post">
+    <form action="/mark" method="post">
       <div class="item">
         <% if (item.completed === true){ %> 
           <input type="checkbox" name="checkbox" checked="true" onChange="this.form.submit()">
           <p style="text-decoration: line-through;"><%=item.name%></p> 
+          <a href="/api/delete/<%=item._id%>" > <i class="fa fa-trash myFa"></i> </a>
         <% } else{ %>
           <input type="checkbox" name="checkbox" onChange="this.form.submit()">
           <p><%=item.name%></p> 
+          <a href="/api/delete/<%=item._id%>" > <i class="fa fa-trash myFa"></i> </a>
         <% } %>
       </div>
       <input type="hidden" name="listName" value="<%= listTitle %>"></input>
