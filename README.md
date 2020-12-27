@@ -1,7 +1,6 @@
 # todolist-v2
-This is a TodoList web app where the user can add new tasks and delete the completed ones.It has a MongoDB database.
 
-Check it out on : https://todolistanant.herokuapp.com
+This is a TodoList web app where the user can add new tasks and delete the completed ones. It has a MongoDB database.
 
 To create your own custom list you can add "/<your_name>" at the end of the above URL.
 
