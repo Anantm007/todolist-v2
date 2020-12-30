@@ -14,23 +14,25 @@ const defaultItems = require("./utility");
 // Show the main list
 router.get("/", async (req, res) => {
   try {
-    await Item.find({}, async (err, foundItems) => {
-      if (foundItems.length === 0) {
-        await Item.insertMany(defaultItems, async (err) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log("Successfully savevd default items to DB.");
-          }
-        });
-        return res.redirect("/");
-      } else {
-        return res.render("list", {
-          listTitle: "Matato",
-          newListItems: foundItems,
-        });
-      }
-    });
+    const listTitle = "Matato";
+    const list = await List.findOne({ name: listTitle }).populate("items");
+
+    if (list.items.length === 0) {
+      await Item.insertMany(defaultItems, async (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          list.items.push(defaultItems[0]);
+          await list.save();
+        }
+      });
+      return res.redirect("/");
+    } else {
+      return res.render("list", {
+        listTitle,
+        newListItems: list.items,
+      });
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);
@@ -85,18 +87,18 @@ router.post("/", async (req, res) => {
       completed: false,
     });
 
-    if (listName === "Matato") {
-      await item.save();
+    await List.findOne({ name: listName }, async (err, foundList) => {
+      if (!err) {
+        foundList.items.push(item);
+        await foundList.save();
+        await item.save();
+      }
+    });
 
+    if (listName === "Matato") {
       return res.redirect("/");
     } else {
-      List.findOne({ name: listName }, async (err, foundList) => {
-        if (!err) {
-          foundList.items.push(item);
-          await foundList.save();
-          res.redirect("/" + listName);
-        }
-      });
+      res.redirect("/" + listName);
     }
   } catch (error) {
     console.log(error);
@@ -105,9 +107,11 @@ router.post("/", async (req, res) => {
 });
 
 // Delete an item
-router.get("/api/delete/:id", async (req, res) => {
+router.get("/api/delete/:id/:listName", async (req, res) => {
   try {
     const id = req.params.id;
+    const listName = req.params.listName;
+
     const itemCheck = await Item.findById(id).select("_id");
 
     if (!itemCheck) {
@@ -116,9 +120,19 @@ router.get("/api/delete/:id", async (req, res) => {
         .json({ success: false, message: "Item not Found" });
     }
 
+    await List.findOneAndUpdate(
+      { name: listName },
+      { $pull: { items: id } },
+      { new: true }
+    );
+
     await Item.findByIdAndRemove(id);
 
-    return res.redirect("/");
+    if (listName === "Matato") {
+      return res.redirect("/");
+    } else {
+      res.redirect("/" + listName);
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);
@@ -130,29 +144,20 @@ router.post("/mark", async (req, res) => {
   try {
     const checkedItemId = req.body.itemId;
     const listName = req.body.listName;
+    const item = await Item.findById(checkedItemId).select("name completed");
+
+    await Item.findByIdAndUpdate(
+      checkedItemId,
+      {
+        completed: !item.completed,
+      },
+      { new: true }
+    );
 
     if (listName === "Matato") {
-      const item = await Item.findById(checkedItemId).select("name completed");
-
-      await Item.findByIdAndUpdate(
-        checkedItemId,
-        {
-          completed: !item.completed,
-        },
-        { new: true }
-      );
-
       return res.redirect("/");
     } else {
-      List.findOneAndUpdate(
-        { name: listName },
-        { $pull: { items: { _id: checkedItemId } } },
-        function (err, foundList) {
-          if (!err) {
-            res.redirect("/" + listName);
-          }
-        }
-      );
+      res.redirect("/" + listName);
     }
   } catch (error) {
     console.log(error);

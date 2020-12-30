@@ -17,11 +17,11 @@
         <% if (item.completed === true){ %> 
           <input type="checkbox" name="checkbox" checked="true" onChange="this.form.submit()">
           <p style="text-decoration: line-through;"><%=item.name%></p> 
-          <a href="/api/delete/<%=item._id%>" > <i class="fa fa-trash myFa"></i> </a>
+          <a href="/api/delete/<%=item._id%>/<%=listTitle%>" > <i class="fa fa-trash myFa"></i> </a>
         <% } else{ %>
           <input type="checkbox" name="checkbox" onChange="this.form.submit()">
           <p><%=item.name%></p> 
-          <a href="/api/delete/<%=item._id%>" > <i class="fa fa-trash myFa"></i> </a>
+          <a href="/api/delete/<%=item._id%>/<%=listTitle%>" > <i class="fa fa-trash myFa"></i> </a>
         <% } %>
       </div>
       <input type="hidden" name="listName" value="<%= listTitle %>"></input>
